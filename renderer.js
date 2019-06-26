@@ -10,29 +10,43 @@ var firebaseConfig = {
   messagingSenderId: "665696116658",
   appId: "1:665696116658:web:d0c9c422c27d6135"
 };
+function createElementFromHTML(htmlString) {
+  var div = document.createElement('div');
+  div.innerHTML = htmlString.trim();
+  // Change this to div.childNodes to support multiple top-level nodes
+  return div.firstChild;
+}
 // Initialize Firebase
+var chatList = document.getElementById("chatList");
 firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
-db.collection("chatroom1").get().then((querySnapshot) => {
-  querySnapshot.forEach((doc) => {
-  
-    console.log(`${doc.id} => ${doc.data().msg}`);
-  });
-});
+function writeMessage() {
 
+}
+var db = firebase.firestore();
+var content = '';
+function readData() {
+  db.collection("chatroom1").get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      content = '<li class="collection-item avatar">' +
+        '            <i class="material-icons circle red">play_arrow</i>' +
+        '            <span class="title">' + doc.data().user + '</span>' +
+        '            <p>' + doc.data().msg + '</p>' +
+        '          </li>';
+
+      console.log(`${doc.id} => ${doc.data().msg}`);
+      chatList.append(createElementFromHTML(content))
+    });
+  });
+}
+readData();
 var messageInput = document.getElementById("messageStream");
 messageInput.addEventListener('change', function () {
   let today = new Date();
   let easternTime = today.toLocaleString('en-US', { timeZone: 'America/Toronto' });
   console.log(easternTime);
-  let p = document.createElement("h1");
-  p.innerHTML = "Ratnu Test"
-  var chatList = document.getElementById("chatList");
-  chatList.insertAdjacentElement("afterend", p);
-
   db.collection("chatroom1").add({
     msg: messageInput.value,
-    user: "tempUser",
+    user: "Simeng He",
     date: easternTime,
     born: new Date(),
     role: "tempRole"
@@ -47,3 +61,13 @@ messageInput.addEventListener('change', function () {
   messageInput.value = "";
 }
 );
+db.collection("chatroom1")
+  .onSnapshot({
+    // Listen for document metadata changes
+    includeMetadataChanges: true
+  }, function (doc) {
+    console.log(doc.id);
+    chatList.innerHTML="";
+    readData();
+  });
+
