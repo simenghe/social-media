@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0" />
   <title>Social Media app xd</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/6.2.3/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/6.2.3/firebase-firestore.js"></script>
   <!-- CSS  -->
@@ -33,12 +34,16 @@
   </nav>
   <div class="section no-pad-bot" id="index-banner">
     <div class="container">
-      <br><br>
-      <br><br>
-      <br><br>
-      <br><br>
-      <br><br>
-      <h1 class="header center orange-text">Starter Template</h1>
+      <div style=width:500px;height:350px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;>
+        <ul class="collection" id="chatList">
+          <li class="collection-item avatar">
+            <i class="material-icons circle red">play_arrow</i>
+            <span class="title">Title</span>
+            <p>First Line</p>
+          </li>
+        </ul>
+      </div>
+      <h1 class="header center orange-text" id="siteTitle">Starter Template</h1>
       <div class="row">
         <div class="input-field col s12">
           <input value="" id="messageStream" type="text" class="password">
@@ -50,8 +55,8 @@
         <h5 class="header col s12 light">A modern responsive front-end framework based on Material Design</h5>
       </div>
       <div class="row center">
-        <a href="https://github.com/simenghe" id="download-button"
-          class="btn-large waves-effect waves-light orange">Check out github</a>
+        <a href="https://github.com/simenghe" id="linkButton" class="btn-large waves-effect waves-light orange">Check
+          out github</a>
       </div>
       <br><br>
     </div>
