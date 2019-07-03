@@ -24,31 +24,50 @@ function writeMessage() {
 }
 var db = firebase.firestore();
 var content = '';
+var dataList = [];
 function readData() {
+  dataList = [];
   db.collection("chatroom1").get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
-      content = '<li class="collection-item avatar">' +
-        '            <i class="material-icons circle red">play_arrow</i>' +
-        '            <span class="title">' + doc.data().user + '</span>' +
-        '            <p>' + doc.data().msg + '</p>' +
-        '          </li>';
-
       console.log(`${doc.id} => ${doc.data().msg}`);
-      chatList.append(createElementFromHTML(content))
+      dataList.push(doc.data());
     });
   });
+  dataList.forEach(function(i){
+    console.log("MESSAGE:"+dataList[i].msg);
+   content = '<li class="collection-item avatar">' +
+  '            <i class="material-icons circle red">play_arrow</i>' +
+  '            <span class="title">' + dataList[i].user + '</span>' +
+  '            <p>' + dataList[i].msg+ '</p>' +
+  '          </li>';
+  });
+  console.log(content);
+  sortList();
+  chatList.append(createElementFromHTML(content));
+}
+function getList(){
+  console.log("ADDED");
+  readData();
+  sortList();
+ 
+}
+
+function sortList(){
+    console.log(_.sortBy(dataList,'timestamp'));
 }
 readData();
+
 var messageInput = document.getElementById("messageStream");
 messageInput.addEventListener('change', function () {
   let today = new Date();
   let easternTime = today.toLocaleString('en-US', { timeZone: 'America/Toronto' });
   console.log(easternTime);
+  console.log("data: " +dataList[0].msg);
   db.collection("chatroom1").add({
     msg: messageInput.value,
     user: "Simeng He",
     date: easternTime,
-    born: new Date(),
+    timestamp: new Date(),
     role: "tempRole"
   })
     .then(function (docRef) {
@@ -59,6 +78,7 @@ messageInput.addEventListener('change', function () {
     });
   console.log(messageInput.value);
   messageInput.value = "";
+  db.collection("chatroom1").orderBy('timestamp',"asc");
 }
 );
 db.collection("chatroom1")
@@ -69,5 +89,8 @@ db.collection("chatroom1")
     console.log(doc.id);
     chatList.innerHTML="";
     readData();
+    sortList()
+    db.collection("chatroom1").orderBy('timestamp',"asc");
+    console.log("End point reached");
   });
 
