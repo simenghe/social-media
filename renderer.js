@@ -19,50 +19,45 @@ function createElementFromHTML(htmlString) {
 // Initialize Firebase
 var chatList = document.getElementById("chatList");
 firebase.initializeApp(firebaseConfig);
-function writeMessage() {
-
+function updateScroll(){
+  console.log("Scrolling to the bottom.");
+  var element = document.getElementById("chatDiv");
+  element.scrollTop = element.scrollHeight;
+  
 }
 var db = firebase.firestore();
 var content = '';
+var globalList = [];
 var dataList = [];
 function readData() {
-  dataList = [];
-  db.collection("chatroom1").get().then((querySnapshot) => {
+  db.collection("chatroom1").orderBy("timestamp").get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data().msg}`);
+      content = '<li class="collection-item avatar">' +
+        '            <i class="material-icons circle red">play_arrow</i>' +
+        '            <span class="title">' + doc.data().user + '</span>' +
+        '            <p>' + doc.data().msg + '</p>' +
+        '          </li>';
+      console.log(doc.data());
       dataList.push(doc.data());
+      console.log(dataList.length)
+      chatList.append(createElementFromHTML(content));
+      console.log(`${doc.id} => ${doc.data().msg}`);
     });
-  });
+  },
   dataList.forEach(function(i){
-    console.log("MESSAGE:"+dataList[i].msg);
-   content = '<li class="collection-item avatar">' +
-  '            <i class="material-icons circle red">play_arrow</i>' +
-  '            <span class="title">' + dataList[i].user + '</span>' +
-  '            <p>' + dataList[i].msg+ '</p>' +
-  '          </li>';
-  });
-  console.log(content);
-  sortList();
-  chatList.append(createElementFromHTML(content));
-}
-function getList(){
-  console.log("ADDED");
-  readData();
-  sortList();
- 
-}
-
-function sortList(){
-    console.log(_.sortBy(dataList,'timestamp'));
+    console.log("RAW "+i);
+    console.log(i);
+  })
+  );
+  updateScroll()
 }
 readData();
-
+setInterval(updateScroll,1000);
 var messageInput = document.getElementById("messageStream");
 messageInput.addEventListener('change', function () {
   let today = new Date();
   let easternTime = today.toLocaleString('en-US', { timeZone: 'America/Toronto' });
   console.log(easternTime);
-  console.log("data: " +dataList[0].msg);
   db.collection("chatroom1").add({
     msg: messageInput.value,
     user: "Simeng He",
@@ -78,7 +73,6 @@ messageInput.addEventListener('change', function () {
     });
   console.log(messageInput.value);
   messageInput.value = "";
-  db.collection("chatroom1").orderBy('timestamp',"asc");
 }
 );
 db.collection("chatroom1")
@@ -87,10 +81,8 @@ db.collection("chatroom1")
     includeMetadataChanges: true
   }, function (doc) {
     console.log(doc.id);
-    chatList.innerHTML="";
+    chatList.innerHTML = "";
     readData();
-    sortList()
-    db.collection("chatroom1").orderBy('timestamp',"asc");
-    console.log("End point reached");
+    updateScroll();
   });
 
